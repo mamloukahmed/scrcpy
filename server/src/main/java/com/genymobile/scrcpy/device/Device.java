@@ -242,7 +242,7 @@ public final class Device {
         return null;
     }
 
-    public static void startApp(String packageName, int displayId) {
+    public static void startApp(String packageName, int displayId, boolean forceStop) {
         Intent launchIntent = FakeContext.get().getPackageManager().getLaunchIntentForPackage(packageName);
         if (launchIntent == null) {
             Ln.w("Cannot create launch intent for app " + packageName);
@@ -259,6 +259,9 @@ public final class Device {
         }
 
         ActivityManager am = ServiceManager.getActivityManager();
+        if (forceStop) {
+            am.forceStopPackage(packageName);
+        }
         am.startActivity(launchIntent, options);
     }
 
