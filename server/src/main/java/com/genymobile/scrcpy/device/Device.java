@@ -1,6 +1,7 @@
 package com.genymobile.scrcpy.device;
 
 import com.genymobile.scrcpy.AndroidVersions;
+import com.genymobile.scrcpy.FakeContext;
 import com.genymobile.scrcpy.util.Ln;
 import com.genymobile.scrcpy.wrappers.ClipboardManager;
 import com.genymobile.scrcpy.wrappers.DisplayControl;
@@ -9,6 +10,9 @@ import com.genymobile.scrcpy.wrappers.ServiceManager;
 import com.genymobile.scrcpy.wrappers.SurfaceControl;
 import com.genymobile.scrcpy.wrappers.WindowManager;
 
+import android.annotation.SuppressLint;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -16,6 +20,9 @@ import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Device {
 
@@ -200,5 +207,18 @@ public final class Device {
 
         DisplayInfo displayInfo = ServiceManager.getDisplayManager().getDisplayInfo(displayId);
         return displayInfo.getRotation();
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    public static List<DeviceApp> listApps() {
+        List<DeviceApp> apps = new ArrayList<>();
+        PackageManager pm = FakeContext.get().getPackageManager();
+        for (ApplicationInfo appInfo : pm.getInstalledApplications(PackageManager.GET_META_DATA)) {
+            String name = pm.getApplicationLabel(appInfo).toString();
+            boolean system = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            apps.add(new DeviceApp(appInfo.packageName, name, system, appInfo.enabled));
+        }
+
+        return apps;
     }
 }
