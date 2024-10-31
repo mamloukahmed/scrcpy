@@ -309,4 +309,11 @@ public class SurfaceEncoder implements AsyncProcessor {
             thread.join();
         }
     }
+
+    /**
+     * Reset the current encoding (as a consequence of an explicit request from the user).
+     */
+    public void requestReset() {
+        reset.reset();
+    }
 }
